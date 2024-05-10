@@ -1,0 +1,37 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/images/bridge.png",
+      "sha1": "230f067a297ebb8fe23dc0fa0db174e4c73fcd9a"
+    },
+    {
+      "path": "src/images/bubble_chat.png",
+      "sha1": "7c6593ba414d7e905d6303fa0868b2be19bb5cec"
+    },
+    {
+      "path": "src/images/edit_icon.png",
+      "sha1": "065bd375349fd0380a245742bc97fe6e0da32580"
+    },
+    {
+      "path": "src/images/enter.png",
+      "sha1": "add1f7a505b94169554e251313eaa29be43b9afa"
+    },
+    {
+      "path": "src/images/hamburger_menu.png",
+      "sha1": "88c2ae63d5e62719423169d5a722f9ae9bbe4e8c"
+    },
+    {
+      "path": "src/images/no_pictures.png",
+      "sha1": "b06494323da75d8af3e3cb2354aefebc3a16f97c"
+    },
+    {
+      "path": "src/images/photos.png",
+      "sha1": "02098a0da4776845147ec5c4797a2584a728831b"
+    },
+    {
+      "path": "src/images/profile_user.png",
+      "sha1": "1c760f4cff78e00997fa01e06a4a7fdbba86cbc8"
+    }
+  ]
+}

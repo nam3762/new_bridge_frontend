@@ -14,6 +14,14 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-ChatApp-ChatAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-ChatApp-ChatAppTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		019D5EEEE0F449C89BD68D13 /* bubble_chat.png in Resources */ = {isa = PBXBuildFile; fileRef = 6067641BF59D43CEAA43471E /* bubble_chat.png */; };
+		2477A357D18543BAAE4DEB9B /* edit_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BF4991ECB0554865AF365A6F /* edit_icon.png */; };
+		77686557ED2F4F1EB00EADA6 /* enter.png in Resources */ = {isa = PBXBuildFile; fileRef = 7565942772634FDD91AC02A7 /* enter.png */; };
+		97672B7F9DDB4444AC82A6AE /* no_pictures.png in Resources */ = {isa = PBXBuildFile; fileRef = 277FB182F3ED4DD1B22A4747 /* no_pictures.png */; };
+		32A5EE45BC8F4375BFEC9D54 /* photos.png in Resources */ = {isa = PBXBuildFile; fileRef = B4E0EF7B7E7C45D68B90726F /* photos.png */; };
+		43608270CC1F4227B921793D /* profile_user.png in Resources */ = {isa = PBXBuildFile; fileRef = B6BF3D2FDE0B4128BE0E07FC /* profile_user.png */; };
+		61C21BFB619541B88CB4C007 /* hamburger_menu.png in Resources */ = {isa = PBXBuildFile; fileRef = A9DD485ACEA04CD0A4DB52AB /* hamburger_menu.png */; };
+		D1CB0E4F0DC44A4682F89C3A /* bridge.png in Resources */ = {isa = PBXBuildFile; fileRef = F60EE651ACB34041B642BA51 /* bridge.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +44,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ChatApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ChatApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ChatApp/main.m; sourceTree = "<group>"; };
-	    13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ChatApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ChatApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-ChatApp-ChatAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ChatApp-ChatAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4392A12AC88292D35C810B /* Pods-ChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp.debug.xcconfig"; path = "Target Support Files/Pods-ChatApp/Pods-ChatApp.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-ChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp.release.xcconfig"; path = "Target Support Files/Pods-ChatApp/Pods-ChatApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -45,6 +53,14 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ChatApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-ChatApp-ChatAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp-ChatAppTests.release.xcconfig"; path = "Target Support Files/Pods-ChatApp-ChatAppTests/Pods-ChatApp-ChatAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		6067641BF59D43CEAA43471E /* bubble_chat.png */ = {isa = PBXFileReference; name = "bubble_chat.png"; path = "../src/images/bubble_chat.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BF4991ECB0554865AF365A6F /* edit_icon.png */ = {isa = PBXFileReference; name = "edit_icon.png"; path = "../src/images/edit_icon.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		7565942772634FDD91AC02A7 /* enter.png */ = {isa = PBXFileReference; name = "enter.png"; path = "../src/images/enter.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		277FB182F3ED4DD1B22A4747 /* no_pictures.png */ = {isa = PBXFileReference; name = "no_pictures.png"; path = "../src/images/no_pictures.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B4E0EF7B7E7C45D68B90726F /* photos.png */ = {isa = PBXFileReference; name = "photos.png"; path = "../src/images/photos.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B6BF3D2FDE0B4128BE0E07FC /* profile_user.png */ = {isa = PBXFileReference; name = "profile_user.png"; path = "../src/images/profile_user.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A9DD485ACEA04CD0A4DB52AB /* hamburger_menu.png */ = {isa = PBXFileReference; name = "hamburger_menu.png"; path = "../src/images/hamburger_menu.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F60EE651ACB34041B642BA51 /* bridge.png */ = {isa = PBXFileReference; name = "bridge.png"; path = "../src/images/bridge.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +140,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				F8B964F88B6041F1AED80B0E /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -149,6 +166,22 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		F8B964F88B6041F1AED80B0E /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				6067641BF59D43CEAA43471E /* bubble_chat.png */,
+				BF4991ECB0554865AF365A6F /* edit_icon.png */,
+				7565942772634FDD91AC02A7 /* enter.png */,
+				277FB182F3ED4DD1B22A4747 /* no_pictures.png */,
+				B4E0EF7B7E7C45D68B90726F /* photos.png */,
+				B6BF3D2FDE0B4128BE0E07FC /* profile_user.png */,
+				A9DD485ACEA04CD0A4DB52AB /* hamburger_menu.png */,
+				F60EE651ACB34041B642BA51 /* bridge.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -245,6 +278,14 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				019D5EEEE0F449C89BD68D13 /* bubble_chat.png in Resources */,
+				2477A357D18543BAAE4DEB9B /* edit_icon.png in Resources */,
+				77686557ED2F4F1EB00EADA6 /* enter.png in Resources */,
+				97672B7F9DDB4444AC82A6AE /* no_pictures.png in Resources */,
+				32A5EE45BC8F4375BFEC9D54 /* photos.png in Resources */,
+				43608270CC1F4227B921793D /* profile_user.png in Resources */,
+				61C21BFB619541B88CB4C007 /* hamburger_menu.png in Resources */,
+				D1CB0E4F0DC44A4682F89C3A /* bridge.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -115,4 +115,8 @@ dependencies {
     }
 }
 
+project.ext.react = [
+    enableHermes: true,  // 여기에서 Hermes 엔진 활성화
+]
+
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
