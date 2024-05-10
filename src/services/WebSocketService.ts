@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { ChatMessage } from '../models/ChatMessage';
 
 class WebSocketService {
-  private static instance: WebSocketService;
+  private static instance: WebSocketService | null = null;
   private socket$: WebSocketSubject<any>;
   private messageSubject = new Subject<ChatMessage>();
 
@@ -47,4 +47,4 @@ class WebSocketService {
   }
 }
 
-export default WebSocketService.getInstance();
+export default WebSocketService;

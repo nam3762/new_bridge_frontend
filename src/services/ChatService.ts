@@ -1,42 +1,35 @@
 // src/services/ChatService.ts
 import axios from 'axios';
-import { API_BASE_URL } from '../config';
-import { ChatMessage } from '../models/ChatMessage';
 
 class ChatService {
-  static async findAllRoomsByUserId(userId: number): Promise<any[]> {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/chat/all/${userId}`);
-      if (response.data.code === 200) {
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message);
-      }
-    } catch (error) {
-      throw new Error('Error fetching chat rooms');
+  private static instance: ChatService;
+  private constructor() {}
+
+  static getInstance(): ChatService {
+    if (!ChatService.instance) {
+      ChatService.instance = new ChatService();
     }
+    return ChatService.instance;
   }
 
-  static async getMessages(roomId: string): Promise<ChatMessage[]> {
+  async createChatRoom(hostId: number, guestId: number, roomName: string): Promise<any> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/chat/enter/${roomId}`);
-      if (response.data.code === 200) {
-        return response.data.data.map((message: any) => ({
-          key: message.key,
-          roomId: message.roomId,
-          messageId: message.messageId,
-          userId: message.userId,
-          userName: message.userName,
-          message: message.message,
-          timestamp: new Date(message.timestamp),
-        }));
+      const response = await axios.post('http://172.21.116.60:8080/chat/create', {
+        hostId,
+        guestId,
+        roomName
+      });
+
+      if (response.status === 200 && response.data.code === 200) {
+        return response.data; // 성공적으로 채팅방이 생성된 경우
       } else {
-        throw new Error(response.data.message);
+        throw new Error(`Failed to create chat room with status: ${response.status}`);
       }
     } catch (error) {
-      throw new Error('Error fetching messages');
+      console.error('Create chat room error:', error);
+      throw error; // 오류를 상위 호출자에게 전달
     }
   }
 }
 
-export default ChatService;
+export default ChatService.getInstance();

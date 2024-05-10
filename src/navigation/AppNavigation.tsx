@@ -24,10 +24,10 @@ export type RootStackParamList = {
   SignUp: undefined;
   Home: undefined;
   ChatList: undefined;
-  ChatRoom: { chatId: string; roomName?: string };
+  ChatRoom: { chatId: number; roomName?: string };
   PostList: undefined;
   PostCreate: undefined;
-  PostDetail: { postId: number; author: string };
+  PostDetail: { id: string };
   MyProfile: undefined;
   Settings: undefined;
   LogOut: undefined;
@@ -56,7 +56,7 @@ const ChatStack = () => (
       name="ChatRoom"
       component={ChatRoomScreen}
       options={({ route }) => ({
-        title: `Chat with ${route.params.roomName}`,
+        title: `Chat with ${route.params.roomName || route.params.chatId}`,
       })}
     />
   </Stack.Navigator>
@@ -85,9 +85,7 @@ const PostStack = () => (
     <Stack.Screen
       name="PostDetail"
       component={PostDetailScreen}
-      options={({ route }) => ({
-        title: `Post by ${route.params.author}`,
-      })}
+      options={{ title: 'Post Detail' }}
     />
   </Stack.Navigator>
 );

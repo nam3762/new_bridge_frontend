@@ -1,91 +1,85 @@
 // src/screens/PostDetailScreen.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, Button } from 'react-native';
 import styled from 'styled-components/native';
+import PostService from '../services/PostService';
+import ChatService from '../services/ChatService';
+import { Post } from '../models/Post';
+import { useUser } from '../context/UserContext';  // useUser 훅 추가
+import { RootStackParamList } from '../navigation/AppNavigation';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+
+type PostDetailScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PostDetail'>;
+type PostDetailScreenRouteProp = RouteProp<RootStackParamList, 'PostDetail'>;
+
+interface PostDetailScreenProps {
+  navigation: PostDetailScreenNavigationProp;
+  route: PostDetailScreenRouteProp;
+}
 
 const Container = styled.SafeAreaView`
   flex: 1;
-  padding: 20px;
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const Title = styled.Text`
-  font-size: 24px;
+  font-size: 20px;
   font-family: ${({ theme }) => theme.fonts.bold};
   margin-bottom: 10px;
-  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
-const Body = styled.Text`
-  font-size: 18px;
-  font-family: ${({ theme }) => theme.fonts.regular};
-  margin-bottom: 10px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const Author = styled.Text`
+const DetailText = styled.Text`
   font-size: 16px;
-  font-family: ${({ theme }) => theme.fonts.medium};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const Category = styled.Text`
-  font-size: 14px;
   font-family: ${({ theme }) => theme.fonts.regular};
-  color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 `;
 
-const ImagePreview = styled.Image`
-  width: 100%;
-  height: 200px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-`;
+const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }) => {
+  const { id } = route.params;
+  const [post, setPost] = useState<Post | null>(null);
+  const { user } = useUser();  // 사용자 정보 불러오기
 
-interface PostDetailScreenProps {
-  route: {
-    params: {
-      postId: number;
-      author: string;
+  useEffect(() => {
+    const fetchPostDetail = async () => {
+      try {
+        const result = await PostService.getPost(id);
+        setPost(result);
+      } catch (error) {
+        console.error('Failed to fetch post detail', error);
+        Alert.alert('Error', 'Failed to fetch post detail');
+      }
     };
+
+    fetchPostDetail();
+  }, [id]);
+
+  const handleChatPress = async () => {
+    if (!post || !user) {
+      Alert.alert('Error', 'Post data or user data is not available');
+      return;
+    }
+    try {
+      await ChatService.createChatRoom(user.userId, post.userId, post.companyName);
+      navigation.navigate('ChatRoom', { userId: post.userId, roomName: post.companyName });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to start chat with the user');
+    }
   };
-}
 
-const postsData = [
-  {
-    id: 1,
-    title: 'First Post',
-    body: 'This is the body of the first post',
-    category: 'Travel',
-    author: 'Alice',
-  },
-  {
-    id: 2,
-    title: 'Second Post',
-    body: 'This is the body of the second post',
-    category: 'Technology',
-    author: 'Bob',
-  },
-  {
-    id: 3,
-    title: 'Third Post',
-    body: 'Another technology post',
-    category: 'Technology',
-    author: 'Charlie',
-  },
-];
-
-const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route }) => {
-  const { postId, author } = route.params;
-  const post = postsData.find((p) => p.id === postId);
+  if (!post) {
+    return null;
+  }
 
   return (
     <Container>
-      <ImagePreview source={require('../images/no_pictures.png')} />
-      <Title>{post?.title}</Title>
-      <Body>{post?.body}</Body>
-      <Category>{post?.category}</Category>
-      <Author>By {author}</Author>
+      <ScrollView contentContainerStyle={{ padding: 20 }}>
+        <Title>{post.productName}</Title>
+        <DetailText>Company: {post.companyName}</DetailText>
+        <DetailText>Product Category: {post.productCategory}</DetailText>
+        <DetailText>Certification: {post.certification}</DetailText>
+        <Button title="Chatting" onPress={handleChatPress} />
+      </ScrollView>
     </Container>
   );
 };

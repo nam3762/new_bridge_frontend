@@ -50,7 +50,7 @@ const ChatRoomScreen: React.FC = () => {
   const { chatId, roomName } = route.params;
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const webSocketService = WebSocketService;
+  const webSocketService = WebSocketService.getInstance();
   const { user } = useUser();
 
   const fetchMessages = async () => {
@@ -77,9 +77,9 @@ const ChatRoomScreen: React.FC = () => {
     };
 
     webSocketService.sendMessage(chatMessage);
-    setMessages([...messages, chatMessage]);
     setNewMessage('');
   };
+
 
   useEffect(() => {
     fetchMessages();

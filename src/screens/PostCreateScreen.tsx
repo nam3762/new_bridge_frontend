@@ -1,22 +1,37 @@
 // src/screens/PostCreateScreen.tsx
 import React, { useState } from 'react';
+import { Alert, StyleSheet, TextInput, TouchableOpacity, View, Text } from 'react-native';
 import styled from 'styled-components/native';
+import PostService from '../services/PostService';
+import { useUser } from '../context/UserContext';
 import { RootStackParamList } from '../navigation/AppNavigation';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { launchImageLibrary } from 'react-native-image-picker';
-import CheckBox from '@react-native-community/checkbox';
+
+type PostCreateScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PostList'>;
+
+interface PostCreateScreenProps {
+  navigation: PostCreateScreenNavigationProp;
+  route: { params: { refreshList: () => void } };
+}
 
 const Container = styled.SafeAreaView`
   flex: 1;
-  padding: 20px;
   background-color: ${({ theme }) => theme.colors.background};
+  padding: 20px;
+`;
+
+const Label = styled.Text`
+  font-size: 16px;
+  margin-bottom: 5px;
+  font-family: ${({ theme }) => theme.fonts.medium};
 `;
 
 const Input = styled.TextInput`
-  border: 1px solid #e0e0e0;
+  border-width: 1px;
+  border-color: #e0e0e0;
+  border-radius: 5px;
   padding: 10px;
   margin-bottom: 15px;
-  border-radius: 5px;
   background-color: ${({ theme }) => theme.colors.background};
   font-family: ${({ theme }) => theme.fonts.regular};
 `;
@@ -24,126 +39,76 @@ const Input = styled.TextInput`
 const SubmitButton = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.primary};
   padding: 15px;
-  align-items: center;
   border-radius: 5px;
+  align-items: center;
 `;
 
 const SubmitButtonText = styled.Text`
   color: #ffffff;
-  font-weight: bold;
+  font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.medium};
 `;
 
-const SelectImageButton = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 15px;
-`;
+const PostCreateScreen: React.FC<PostCreateScreenProps> = ({ navigation, route }) => {
+  const [companyName, setCompanyName] = useState('');
+  const [productName, setProductName] = useState('');
+  const [productCategory, setProductCategory] = useState('');
+  const [certification, setCertification] = useState('');
+  const { user } = useUser();
 
-const SelectImageIcon = styled.Image`
-  width: 24px;
-  height: 24px;
-  tint-color: #007aff;
-  margin-right: 8px;
-`;
+  const handleCreatePost = async () => {
+    if (!companyName || !productName || !productCategory || !certification) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
 
-const ImagePreview = styled.Image`
-  width: 100px;
-  height: 100px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-`;
+    const newPost = {
+      userId: user.userId,
+      companyName,
+      productName,
+      productCategory,
+      certification,
+    };
 
-const CheckBoxContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 15px;
-`;
-
-const CheckBoxLabel = styled.Text`
-  font-family: ${({ theme }) => theme.fonts.regular};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-left: 10px;
-`;
-
-type PostCreateScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PostCreate'>;
-
-interface PostCreateScreenProps {
-  navigation: PostCreateScreenNavigationProp;
-}
-
-const PostCreateScreen: React.FC<PostCreateScreenProps> = ({ navigation }) => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [category, setCategory] = useState('');
-  const [imageUri, setImageUri] = useState<string | undefined>(undefined);
-  const [checkbox1, setCheckbox1] = useState(false);
-  const [checkbox2, setCheckbox2] = useState(false);
-
-  const handleImageSelect = () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
-      if (response.assets && response.assets.length > 0) {
-        setImageUri(response.assets[0].uri);
-      }
-    });
-  };
-
-  const handleSubmit = () => {
-    if (title && body && category) {
-      console.log('Post Created:', {
-        title,
-        body,
-        category,
-        imageUri,
-        checkbox1,
-        checkbox2,
-      });
-      navigation.goBack();
+    try {
+      await PostService.createPost(newPost);
+      Alert.alert('Success', 'Post created successfully');
+      route.params.refreshList();
+      navigation.navigate('PostList');
+    } catch (error) {
+      console.error('Failed to create post', error);
+      Alert.alert('Error', 'Failed to create post');
     }
   };
 
   return (
     <Container>
+      <Label>Company Name</Label>
       <Input
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
+        value={companyName}
+        onChangeText={setCompanyName}
+        placeholder="Enter company name"
       />
+      <Label>Product Name</Label>
       <Input
-        placeholder="Body"
-        value={body}
-        onChangeText={setBody}
-        multiline
-        numberOfLines={4}
+        value={productName}
+        onChangeText={setProductName}
+        placeholder="Enter product name"
       />
+      <Label>Product Category</Label>
       <Input
-        placeholder="Category"
-        value={category}
-        onChangeText={setCategory}
+        value={productCategory}
+        onChangeText={setProductCategory}
+        placeholder="Enter product category"
       />
-      <SelectImageButton onPress={handleImageSelect}>
-        <SelectImageIcon source={require('../images/photos.png')} />
-        <SubmitButtonText>Select Image</SubmitButtonText>
-      </SelectImageButton>
-      {imageUri && <ImagePreview source={{ uri: imageUri }} />}
-      <CheckBoxContainer>
-        <CheckBox
-          value={checkbox1}
-          onValueChange={setCheckbox1}
-          tintColors={{ true: '#007aff', false: '#e0e0e0' }}
-        />
-        <CheckBoxLabel>Checkbox1</CheckBoxLabel>
-      </CheckBoxContainer>
-      <CheckBoxContainer>
-        <CheckBox
-          value={checkbox2}
-          onValueChange={setCheckbox2}
-          tintColors={{ true: '#007aff', false: '#e0e0e0' }}
-        />
-        <CheckBoxLabel>Checkbox2</CheckBoxLabel>
-      </CheckBoxContainer>
-      <SubmitButton onPress={handleSubmit}>
-        <SubmitButtonText>Submit</SubmitButtonText>
+      <Label>Certification</Label>
+      <Input
+        value={certification}
+        onChangeText={setCertification}
+        placeholder="Enter certification"
+      />
+      <SubmitButton onPress={handleCreatePost}>
+        <SubmitButtonText>Create Post</SubmitButtonText>
       </SubmitButton>
     </Container>
   );

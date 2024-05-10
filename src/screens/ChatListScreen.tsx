@@ -6,8 +6,9 @@ import styled from 'styled-components/native';
 import ChatService from '../services/ChatService';
 import { RootStackParamList } from '../navigation/AppNavigation';
 import { useUser } from '../context/UserContext';
+import { ChatRoom } from '../models/ChatRoom';
 
-type ChatListScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChatList'>;
+type ChatListScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChatRoom'>;
 
 interface ChatListScreenProps {
   navigation: ChatListScreenNavigationProp;
@@ -33,7 +34,7 @@ const ChatItemTitle = styled.Text`
 
 const ChatListScreen: React.FC<ChatListScreenProps> = ({ navigation }) => {
   const { user } = useUser();
-  const [chatRooms, setChatRooms] = useState<any[]>([]);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
 
   const fetchChatRooms = async () => {
     try {
@@ -49,8 +50,8 @@ const ChatListScreen: React.FC<ChatListScreenProps> = ({ navigation }) => {
     navigation.navigate('ChatRoom', { chatId: roomId, roomName });
   };
 
-  const renderChatItem = ({ item }: { item: any }) => {
-    const title = item.roomName || 'Unnamed Chat Room';
+  const renderChatItem = ({ item }: { item: ChatRoom }) => {
+    const title = item.roomName || `Chat with ${item.participants.find((p) => p.userId !== user.userId)?.userName || 'undefined'}`;
     return (
       <ChatItemContainer onPress={() => handleChatRoomPress(item.roomId, title)}>
         <View style={{ flex: 1 }}>
@@ -74,15 +75,5 @@ const ChatListScreen: React.FC<ChatListScreenProps> = ({ navigation }) => {
     </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  chatItemContainer: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});
 
 export default ChatListScreen;

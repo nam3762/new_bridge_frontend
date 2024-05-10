@@ -1,27 +1,13 @@
 // src/screens/CreateChatScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Alert, FlatList, TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import styled from 'styled-components/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/AppNavigation';
+import ChatService from '../services/ChatService';
 import { useUser } from '../context/UserContext';
-import axios from 'axios';
-
-type CreateChatScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CreateChat'>;
-
-interface CreateChatScreenProps {
-  navigation: CreateChatScreenNavigationProp;
-}
 
 const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
-`;
-
-const AddButtonContainer = styled.View`
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
 `;
 
 interface User {
@@ -29,54 +15,54 @@ interface User {
   userName: string;
 }
 
-const CreateChatScreen: React.FC<CreateChatScreenProps> = ({ navigation }) => {
+const CreateChatScreen: React.FC = ({ navigation }) => {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    async function fetchUsers() {
       try {
         const response = await axios.get('http://172.21.116.60:8080/user/all');
-        if (response.data.code === 200) {
+        if (response.status === 200 && response.data.code === 200) {
           setUsers(response.data.data.filter((u: User) => u.userId !== user.userId));
+        } else {
+          throw new Error(`Unexpected response code: ${response.data.code}`);
         }
       } catch (error) {
         Alert.alert('Error', 'Failed to fetch users');
+        console.error('Fetch users error:', error);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
 
     fetchUsers();
-  }, [user]);
+  }, []);
 
-  const handleUserPress = async (guestId: number, userName: string) => {
+  const handleCreateChatRoom = async (guestId: number, userName: string) => {
     try {
-      const response = await axios.post('http://172.21.116.60:8080/chat/create', {
-        hostId: user.userId,
-        guestId,
-        roomName: `Chat with ${userName}`,
-      });
-
-      if (response.data.code === 200) {
-        navigation.navigate('ChatRoom', { chatId: response.data.data.roomId });
-      }
+      const result = await ChatService.createChatRoom(user.userId, guestId, `${user.userName} and ${userName}`);
+      navigation.navigate('ChatRoom', { chatId: result.data.roomId, roomName: result.data.roomName });
     } catch (error) {
       Alert.alert('Error', 'Failed to create chat room');
     }
   };
 
-  const renderUser = ({ item }: { item: User }) => (
-    <TouchableOpacity style={styles.userItem} onPress={() => handleUserPress(item.userId, item.userName)}>
-      <Text style={styles.userName}>{item.userName}</Text>
-    </TouchableOpacity>
-  );
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <Container>
       <FlatList
         data={users}
-        renderItem={renderUser}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.userItem} onPress={() => handleCreateChatRoom(item.userId, item.userName)}>
+            <Text style={styles.userName}>{item.userName}</Text>
+          </TouchableOpacity>
+        )}
         keyExtractor={(item) => item.userId.toString()}
-        ListEmptyComponent={<Text style={styles.emptyMessage}>No users available</Text>}
       />
     </Container>
   );
@@ -90,12 +76,6 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-  },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-    color: '#757575',
   },
 });
 
