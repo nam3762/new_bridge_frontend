@@ -56,6 +56,13 @@ const SignUpText = styled.Text`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const Logo = styled.Image`
+  width: 200px;
+  height: 83px;
+  align-self: center;
+  justify-content: center;
+`;
+
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 interface LoginScreenProps {
@@ -70,31 +77,38 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   const handleLogin = async () => {
     setErrorMessage('');
-    const response = await signIn(email, password);
-    if (response.code === 0 && response.data) {
-      const userId = response.data.userId;
-      const userResponse = await getUserById(userId);
+    try {
+      const response = await signIn(email, password);
 
-      if (userResponse.code === 0 && userResponse.data) {
-        setUser({
-          userId: userResponse.data.userId,
-          userName: userResponse.data.userName,
-          email: userResponse.data.email,
-        });
-        navigation.replace('Home');
-      } else {
+      if (response.code === 200 && response.data) {
+        const userId = response.data.userId;
+        const userResponse = await getUserById(userId);
+
+        if (userResponse.code === 200 && userResponse.data) {
+          setUser({
+            userId: userResponse.data.userId,
+            userName: userResponse.data.userName,
+            email: userResponse.data.email,
+          });
+
+          // 화면을 Home으로 전환
+          navigation.replace('Home');
+        } else {
+          setErrorMessage('Unknown Error');
+        }
+      } else if (response.code === -1) {
         setErrorMessage('Unknown Error');
+      } else {
+        setErrorMessage(response.message || 'Unauthorized Error');
       }
-    } else if (response.code === -1) {
-      setErrorMessage('Unknown Error');
-    } else {
-      setErrorMessage(response.message || 'Unauthorized Error');
+    } catch (error) {
+      setErrorMessage('Network Error');
     }
   };
 
   return (
     <Container>
-      <Title>Login</Title>
+      <Logo source={require('../images/bridge.png')} />
       {errorMessage ? <ErrorMessage>{errorMessage}</ErrorMessage> : null}
       <Input
         placeholder="Email"

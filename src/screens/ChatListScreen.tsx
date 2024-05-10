@@ -1,81 +1,88 @@
 // src/screens/ChatListScreen.tsx
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/native';
-import { FlatList, TouchableOpacity } from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import styled from 'styled-components/native';
+import ChatService from '../services/ChatService';
 import { RootStackParamList } from '../navigation/AppNavigation';
-import { getChatRooms } from '../api/ChatApi';
 import { useUser } from '../context/UserContext';
+
+type ChatListScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChatList'>;
+
+interface ChatListScreenProps {
+  navigation: ChatListScreenNavigationProp;
+}
 
 const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
-const Header = styled.Text`
-  font-size: 28px;
-  font-family: ${({ theme }) => theme.fonts.bold};
-  margin: 20px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const RoomContainer = styled.View`
-  padding: 20px;
+const ChatItemContainer = styled.TouchableOpacity`
+  padding: 15px;
   border-bottom-width: 1px;
   border-bottom-color: #e0e0e0;
+  flex-direction: row;
+  align-items: center;
 `;
 
-const RoomName = styled.Text`
-  font-size: 18px;
+const ChatItemTitle = styled.Text`
+  font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.medium};
 `;
 
-type ChatListScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChatRoom'>;
-
-interface ChatListScreenProps {
-  navigation: ChatListScreenNavigationProp;
-}
-
-interface ChatRoom {
-  roomId: number;
-  roomName: string;
-}
-
 const ChatListScreen: React.FC<ChatListScreenProps> = ({ navigation }) => {
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const { user } = useUser();
+  const [chatRooms, setChatRooms] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (user) {
-      fetchChatRooms(user.userId);
-    }
-  }, [user]);
-
-  const fetchChatRooms = async (userId: number) => {
-    const response = await getChatRooms(userId);
-    if (response.code === 0 && response.data) {
-      setChatRooms(response.data);
+  const fetchChatRooms = async () => {
+    try {
+      const rooms = await ChatService.findAllRoomsByUserId(user.userId);
+      setChatRooms(rooms);
+    } catch (error) {
+      console.error('Failed to fetch chat rooms', error);
+      Alert.alert('Error', 'Failed to fetch chat rooms');
     }
   };
 
-  const renderItem = ({ item }: { item: ChatRoom }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('ChatRoom', { roomId: item.roomId, roomName: item.roomName })}>
-      <RoomContainer>
-        <RoomName>{item.roomName}</RoomName>
-      </RoomContainer>
-    </TouchableOpacity>
-  );
+  const handleChatRoomPress = (roomId: string, roomName: string) => {
+    navigation.navigate('ChatRoom', { chatId: roomId, roomName });
+  };
+
+  const renderChatItem = ({ item }: { item: any }) => {
+    const title = item.roomName || 'Unnamed Chat Room';
+    return (
+      <ChatItemContainer onPress={() => handleChatRoomPress(item.roomId, title)}>
+        <View style={{ flex: 1 }}>
+          <ChatItemTitle>{title}</ChatItemTitle>
+        </View>
+      </ChatItemContainer>
+    );
+  };
+
+  useEffect(() => {
+    fetchChatRooms();
+  }, []);
 
   return (
     <Container>
-      <Header>Chats</Header>
       <FlatList
         data={chatRooms}
-        keyExtractor={(item) => item.roomId.toString()}
-        renderItem={renderItem}
+        renderItem={renderChatItem}
+        keyExtractor={(item) => item.roomId}
       />
     </Container>
   );
 };
+
+const styles = StyleSheet.create({
+  chatItemContainer: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+});
 
 export default ChatListScreen;

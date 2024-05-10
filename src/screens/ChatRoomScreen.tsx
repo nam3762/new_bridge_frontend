@@ -1,130 +1,139 @@
 // src/screens/ChatRoomScreen.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import styled from 'styled-components/native';
-import { FlatList, TextInput, TouchableOpacity } from 'react-native';
-import { StackNavigationProp, RouteProp } from '@react-navigation/stack';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigation';
-import { getChatMessages, sendMessage } from '../api/ChatApi';
+import ChatService from '../services/ChatService';
+import WebSocketService from '../services/WebSocketService';
+import { ChatMessage } from '../models/ChatMessage';
 import { useUser } from '../context/UserContext';
+
+type ChatRoomRouteProp = RouteProp<RootStackParamList, 'ChatRoom'>;
 
 const Container = styled.SafeAreaView`
   flex: 1;
-  padding: 10px;
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
-const Header = styled.Text`
-  font-size: 24px;
-  font-family: ${({ theme }) => theme.fonts.bold};
-  margin: 10px;
-  text-align: center;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const MessageContainer = styled.View`
-  margin-bottom: 10px;
-`;
-
-const MessageText = styled.Text`
-  padding: 10px;
-  border-radius: 5px;
-  font-family: ${({ theme }) => theme.fonts.regular};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const InputContainer = styled.View`
+const MessageInputContainer = styled.View`
   flex-direction: row;
+  padding: 10px;
+  border-top-width: 1px;
+  border-top-color: #e0e0e0;
   align-items: center;
-  margin-top: 10px;
 `;
 
-const MessageInput = styled(TextInput)`
+const MessageInput = styled.TextInput`
   flex: 1;
-  border: 1px solid #e0e0e0;
+  border-width: 1px;
+  border-color: #e0e0e0;
+  border-radius: 20px;
   padding: 10px;
   margin-right: 10px;
-  border-radius: 5px;
-  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const SendButton = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.primary};
-  padding: 10px 15px;
+  padding: 10px;
   border-radius: 5px;
 `;
 
 const SendButtonText = styled.Text`
   color: #ffffff;
-  font-weight: bold;
+  font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.medium};
 `;
 
-type ChatRoomScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChatRoom'>;
-type ChatRoomScreenRouteProp = RouteProp<RootStackParamList, 'ChatRoom'>;
-
-interface ChatRoomScreenProps {
-  navigation: ChatRoomScreenNavigationProp;
-  route: ChatRoomScreenRouteProp;
-}
-
-interface ChatMessage {
-  senderName: string;
-  message: string;
-}
-
-const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({ route }) => {
-  const { roomId, roomName } = route.params;
+const ChatRoomScreen: React.FC = () => {
+  const route = useRoute<ChatRoomRouteProp>();
+  const { chatId, roomName } = route.params;
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const webSocketService = WebSocketService;
   const { user } = useUser();
 
+  const fetchMessages = async () => {
+    try {
+      const result = await ChatService.getMessages(chatId);
+      setMessages(result);
+    } catch (error) {
+      console.error('Failed to fetch messages', error);
+      Alert.alert('Error', 'Failed to fetch messages');
+    }
+  };
+
+  const sendMessage = () => {
+    if (newMessage.trim() === '') return;
+
+    const chatMessage: ChatMessage = {
+      key: `${chatId}-${new Date().getTime()}`,
+      roomId: chatId,
+      messageId: new Date().getTime(),
+      userId: user.userId,
+      userName: user.userName || 'undefined',
+      message: newMessage,
+      timestamp: new Date(),
+    };
+
+    webSocketService.sendMessage(chatMessage);
+    setMessages([...messages, chatMessage]);
+    setNewMessage('');
+  };
+
   useEffect(() => {
-    fetchChatMessages(roomId);
-  }, [roomId]);
+    fetchMessages();
 
-  const fetchChatMessages = async (roomId: number) => {
-    const response = await getChatMessages(roomId);
-    if (response.code === 0 && response.data) {
-      setMessages(response.data);
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (user) {
-      const response = await sendMessage(roomId, user.userId, newMessage);
-      if (response.code === 0) {
-        setNewMessage('');
-        fetchChatMessages(roomId);
+    const messageSubscription = webSocketService.messages$.subscribe((message: ChatMessage) => {
+      if (message.roomId === chatId) {
+        setMessages((prev) => [...prev, message]);
       }
-    }
-  };
+    });
 
-  const renderItem = ({ item }: { item: ChatMessage }) => (
-    <MessageContainer>
-      <MessageText>{`${item.senderName}: ${item.message}`}</MessageText>
-    </MessageContainer>
-  );
+    return () => {
+      messageSubscription.unsubscribe();
+    };
+  }, [chatId]);
+
+  const renderMessageItem = ({ item }: { item: ChatMessage }) => {
+    return (
+      <View style={styles.messageItemContainer}>
+        <Text style={styles.messageSender}>{item.userName}</Text>
+        <Text>{item.message}</Text>
+      </View>
+    );
+  };
 
   return (
     <Container>
-      <Header>{roomName}</Header>
       <FlatList
         data={messages}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
+        renderItem={renderMessageItem}
+        keyExtractor={(item, index) => `${item.roomId}-${index}`}
       />
-      <InputContainer>
+      <MessageInputContainer>
         <MessageInput
-          placeholder="Type your message"
           value={newMessage}
           onChangeText={setNewMessage}
+          placeholder="Type your message"
         />
-        <SendButton onPress={handleSendMessage}>
+        <SendButton onPress={sendMessage}>
           <SendButtonText>Send</SendButtonText>
         </SendButton>
-      </InputContainer>
+      </MessageInputContainer>
     </Container>
   );
 };
+
+const styles = StyleSheet.create({
+  messageItemContainer: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  messageSender: {
+    fontWeight: 'bold',
+  },
+});
 
 export default ChatRoomScreen;

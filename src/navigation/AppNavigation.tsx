@@ -16,6 +16,7 @@ import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import { useUser } from '../context/UserContext';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -23,7 +24,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   Home: undefined;
   ChatList: undefined;
-  ChatRoom: { chatId: number };
+  ChatRoom: { chatId: string; roomName?: string };
   PostList: undefined;
   PostCreate: undefined;
   PostDetail: { postId: number; author: string };
@@ -49,13 +50,13 @@ const ChatStack = () => (
     <Stack.Screen
       name="ChatList"
       component={ChatListScreen}
-      options={{ title: 'Bridge' }}
+      options={{ title: 'CoCoM' }}
     />
     <Stack.Screen
       name="ChatRoom"
       component={ChatRoomScreen}
       options={({ route }) => ({
-        title: `Chat with ${route.params.chatId}`,
+        title: `Chat with ${route.params.roomName}`,
       })}
     />
   </Stack.Navigator>
@@ -74,7 +75,7 @@ const PostStack = () => (
     <Stack.Screen
       name="PostList"
       component={PostListScreen}
-      options={{ title: 'Bridge' }}
+      options={{ title: 'CoCoM' }}
     />
     <Stack.Screen
       name="PostCreate"
@@ -120,52 +121,60 @@ const MainTabNavigator = () => (
   </Tab.Navigator>
 );
 
-const DrawerNavigator = () => (
-  <Drawer.Navigator
-    drawerContent={(props) => <CustomDrawerContent {...props} />}
-  >
-    <Drawer.Screen
-      name="Home"
-      component={MainTabNavigator}
-      options={{ title: 'Bridge' }}
-    />
-    <Drawer.Screen name="MyProfile" component={MyProfileScreen} options={{ title: 'My Profile' }} />
-    <Drawer.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
-    <Drawer.Screen name="LogOut" component={LogOutScreen} options={{ title: 'Log Out' }} />
-  </Drawer.Navigator>
-);
+const DrawerNavigator = () => {
+  const { user } = useUser();
 
-const CustomDrawerContent = (props) => (
-  <DrawerContentScrollView {...props}>
-    <View style={styles.drawerHeader}>
-      <Image
-        source={require('../images/profile_user.png')}
-        style={styles.drawerHeaderImage}
+  return (
+    <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} user={user} />}
+    >
+      <Drawer.Screen
+        name="Home"
+        component={MainTabNavigator}
+        options={{ title: 'CoCoM' }}
       />
-      <Text style={styles.drawerUsername}>John Doe</Text>
-    </View>
-    <DrawerItem
-      label="Posts"
-      onPress={() => props.navigation.navigate('Posts')}
-    />
-    <DrawerItem
-      label="Chats"
-      onPress={() => props.navigation.navigate('Chats')}
-    />
-    <DrawerItem
-      label="My Profile"
-      onPress={() => props.navigation.navigate('MyProfile')}
-    />
-    <DrawerItem
-      label="Settings"
-      onPress={() => props.navigation.navigate('Settings')}
-    />
-    <DrawerItem
-      label="Log Out"
-      onPress={() => props.navigation.replace('Login')}
-    />
-  </DrawerContentScrollView>
-);
+      <Drawer.Screen name="MyProfile" component={MyProfileScreen} options={{ title: 'My Profile' }} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+      <Drawer.Screen name="LogOut" component={LogOutScreen} options={{ title: 'Log Out' }} />
+    </Drawer.Navigator>
+  );
+};
+
+const CustomDrawerContent = (props) => {
+  const { user } = props;
+
+  return (
+    <DrawerContentScrollView {...props}>
+      <View style={styles.drawerHeader}>
+        <Image
+          source={require('../images/profile_user.png')}
+          style={styles.drawerHeaderImage}
+        />
+        <Text style={styles.drawerUsername}>{user ? user.userName : 'Guest'}</Text>
+      </View>
+      <DrawerItem
+        label="Posts"
+        onPress={() => props.navigation.navigate('Posts')}
+      />
+      <DrawerItem
+        label="Chats"
+        onPress={() => props.navigation.navigate('Chats')}
+      />
+      <DrawerItem
+        label="My Profile"
+        onPress={() => props.navigation.navigate('MyProfile')}
+      />
+      <DrawerItem
+        label="Settings"
+        onPress={() => props.navigation.navigate('Settings')}
+      />
+      <DrawerItem
+        label="Log Out"
+        onPress={() => props.navigation.replace('Login')}
+      />
+    </DrawerContentScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   drawerHeader: {

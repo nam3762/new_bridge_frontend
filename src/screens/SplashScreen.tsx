@@ -12,8 +12,8 @@ const Container = styled.SafeAreaView`
 `;
 
 const Logo = styled.Image`
-  width: 150px;
-  height: 150px;
+  width: 250px;
+  height: 103.75px;
 `;
 
 type SplashScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Splash'>;

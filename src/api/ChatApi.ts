@@ -1,40 +1,38 @@
 // src/api/ChatApi.ts
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://172.21.116.60:8080', // 백엔드 URL
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const BASE_URL = 'http://172.21.116.60:8080';
 
-export const getChatRooms = async (userId: number) => {
+export const getAllUserChats = async (userId: number) => {
   try {
-    const response = await api.get(`/chat/rooms/${userId}`);
+    const response = await axios.get(`${BASE_URL}/chat/all/${userId}`);
     return response.data;
   } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
+    console.error('Error fetching chats:', error);
+    return { code: -1, message: 'Error fetching chats', data: [] };
   }
 };
 
-export const getChatMessages = async (roomId: number) => {
+export const createChatRoom = async (hostId: number, guestId: number, roomName: string) => {
   try {
-    const response = await api.get(`/chat/messages/${roomId}`);
-    return response.data;
-  } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
-  }
-};
-
-export const sendMessage = async (roomId: number, senderId: number, message: string) => {
-  try {
-    const response = await api.post('/chat/send', {
-      roomId,
-      senderId,
-      message,
+    const response = await axios.post(`${BASE_URL}/chat/create`, {
+      hostId,
+      guestId,
+      roomName,
     });
     return response.data;
   } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
+    console.error('Error creating chat room:', error);
+    return { code: -1, message: 'Error creating chat room', data: null };
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/user/all`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return { code: -1, message: 'Error fetching users', data: [] };
   }
 };

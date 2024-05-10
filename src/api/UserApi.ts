@@ -1,53 +1,39 @@
 // src/api/UserApi.ts
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://172.21.116.60:8080', // 백엔드 URL
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const BASE_URL = 'http://172.21.116.60:8080';
 
-export const signUp = async (email: string, password: string, name: string) => {
+export const signIn = async (email: string, pwd: string) => {
   try {
-    const response = await api.post('/user/signup', {
-      userId: 0,
+    const response = await axios.post(`${BASE_URL}/user/login`, {
       email,
-      userPwd: password,
-      userName: name,
+      pwd,
     });
     return response.data;
   } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
+    return { code: -1, message: 'Unauthorized' };
   }
 };
 
-export const signIn = async (email: string, password: string) => {
+export const signUp = async (userId: number, email: string, userPwd: string, userName: string) => {
   try {
-    const response = await api.post('/user/login', {
+    const response = await axios.post(`${BASE_URL}/user/signup`, {
+      userId,
       email,
-      pwd: password,
+      userPwd,
+      userName,
     });
     return response.data;
   } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
+    return { code: -1, message: 'Signup Error' };
   }
 };
 
-export const getUserById = async (userId: number) => {
+export const getUserById = async (id: number) => {
   try {
-    const response = await api.get(`/user/${userId}`);
+    const response = await axios.get(`${BASE_URL}/user/${id}`);
     return response.data;
   } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
-  }
-};
-
-export const getAllUsers = async () => {
-  try {
-    const response = await api.get('/user/all');
-    return response.data;
-  } catch (error) {
-    return error.response?.data || { code: -1, message: 'Unknown Error' };
+    return { code: -1, message: 'Get User Error' };
   }
 };
